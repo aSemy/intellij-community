@@ -47,7 +47,6 @@ gradle.allprojects { project ->
   //      }
   //  }
   //}
-
   //tasks.withType(Test).configureEach { testTask ->
   //  IJTestEventLogger.configureTestEventLogging(testTask)
   //
