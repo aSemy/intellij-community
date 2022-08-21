@@ -231,6 +231,7 @@ public class JavaGradleProjectResolver extends AbstractProjectResolverExtension 
       initScriptConsumer.consume(script);
     }
 
+    // TODO remove this? IJTestEventLogger is replaced in the new plugin.
     final String testEventListenerDefinition = loadTestEventListenerDefinition();
     initScriptConsumer.consume(testEventListenerDefinition);
   }

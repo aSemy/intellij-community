@@ -1,84 +1,93 @@
 //file:noinspection GrPackage
 
+
+initscript {
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+  dependencies {
+    // https://github.com/aSemy/intellij-gradle-init-plugin
+    classpath("dev.adamko.intellij.gradle_init:intellij-gradle-init-plugin:+")
+  }
+}
+
+apply plugin: dev.adamko.intellij.gradle_init.IntellijGradleInitPlugin
+
+
 gradle.allprojects { project ->
-  TaskProvider<Sync> ijTestEventLoggerTask = project.tasks.register("ijTestEventLogger", Sync) { loggerTask ->
-    loggerTask.outputs.upToDateWhen { false }
+  //TaskProvider<Sync> ijTestEventLoggerTask = project.tasks.register("ijTestEventLogger", Sync) { loggerTask ->
+  //  loggerTask.outputs.upToDateWhen { false }
+  //
+  //  from(project.tasks.withType(Test)) {
+  //    include("**/*.ij.log")
+  //  }
+  //  into(loggerTask.temporaryDir)
+  //
+  //  doLast {
+  //    List<File> eventLogFiles = new ArrayList<File>()
+  //    loggerTask.destinationDir.eachFileRecurse(groovy.io.FileType.FILES) { File file ->
+  //      eventLogFiles.add(file)
+  //    }
+  //
+  //    eventLogFiles
+  //      .sort { it.name }
+  //      .eachWithIndex { file, i ->
+  //
+  //        logger.lifecycle("[ijTestEventLogger] $i " + file.name)
+  //
+  //        file.withReader { reader ->
+  //          reader
+  //            .readLines()
+  //          //.sort() // don't need to sort, because the log-writer is synchronized
+  //            .forEach { line ->
+  //              System.out.println(msg)
+  //            }
+  //        }
+  //      }
+  //  }
+  //}
 
-    from(project.tasks.withType(Test)) {
-      include("**/*.ij.log")
-    }
-    into(loggerTask.temporaryDir)
-
-    doLast {
-      List<File> eventLogFiles = new ArrayList<File>()
-      loggerTask.destinationDir.eachFileRecurse(groovy.io.FileType.FILES) { File file ->
-        eventLogFiles.add(file)
-      }
-
-      eventLogFiles
-        .sort { it.name }
-        .eachWithIndex { file, i ->
-
-          logger.lifecycle("[ijTestEventLogger] $i " + file.name)
-
-          file.withReader { reader ->
-            reader
-              .readLines()
-              //.sort() // don't need to sort, because the log-writer is synchronized
-              .forEach { line ->
-                int index = line.indexOf('\t')
-                if (index > 0) {
-                  String msg = line.substring(index).trim()
-                  System.out.println(msg)
-                }
-                else {
-                  logger.warn("[ijTestEventLogger] invalid line $index - $line")
-                }
-              }
-          }
-        }
-    }
-  }
-
-  tasks.withType(Test).configureEach { testTask ->
-    IJTestEventLogger.configureTestEventLogging(testTask)
-
-    testTask.finalizedBy(ijTestEventLoggerTask)
-  }
+  //tasks.withType(Test).configureEach { testTask ->
+  //  IJTestEventLogger.configureTestEventLogging(testTask)
+  //
+  //  //testTask.finalizedBy(ijTestEventLoggerTask)
+  //}
 }
 
 
-gradle.taskGraph.whenReady { taskGraph ->
-  taskGraph.allTasks.each { Task task ->
-    if (task instanceof Test) {
-      try {
-        task.doFirst {
-          try {
-            def urls = task.classpath.files.findAll {
-              it.name == 'idea_rt.jar' || it.name.startsWith('junit')
-            }.collect { it.toURI().toURL() }
-            def classLoader = Class.forName("org.gradle.launcher.daemon.bootstrap.DaemonMain").getClassLoader()
-            if (classLoader instanceof URLClassLoader) {
-              for (URL url : urls) {
-                classLoader.addURL(url)
-              }
-            }
-            else {
-              logger.error("unable to enhance gradle daemon classloader with idea_rt.jar")
-            }
-          }
-          catch (RuntimeException all) {
-            logger.error("unable to enhance gradle daemon classloader with idea_rt.jar", all)
-          }
-        }
 
-        //IJTestEventLogger.logTestReportLocation(task.reports?.html?.entryPoint?.path)
-        //IJTestEventLogger.configureTestEventLogging(task)
-        task.testLogging.showStandardStreams = true
-      }
-      catch (all) {
-        logger.error("", all)
-      }
-    }
-  }
-}
+//gradle.taskGraph.whenReady { taskGraph ->
+//  taskGraph.allTasks.each { Task task ->
+//    if (task instanceof Test) {
+//      try {
+//        task.doFirst {
+//          try {
+//            def urls = task.classpath.files.findAll {
+//              it.name == 'idea_rt.jar' || it.name.startsWith('junit')
+//            }.collect { it.toURI().toURL() }
+//            def classLoader = Class.forName("org.gradle.launcher.daemon.bootstrap.DaemonMain").getClassLoader()
+//            if (classLoader instanceof URLClassLoader) {
+//              for (URL url : urls) {
+//                classLoader.addURL(url)
+//              }
+//            }
+//            else {
+//              logger.error("unable to enhance gradle daemon classloader with idea_rt.jar")
+//            }
+//          }
+//          catch (RuntimeException all) {
+//            logger.error("unable to enhance gradle daemon classloader with idea_rt.jar", all)
+//          }
+//        }
+//
+//        //IJTestEventLogger.logTestReportLocation(task.reports?.html?.entryPoint?.path)
+//        //IJTestEventLogger.configureTestEventLogging(task)
+//        task.testLogging.showStandardStreams = true
+//      }
+//      catch (all) {
+//        logger.error("", all)
+//      }
+//    }
+//  }
+//}
