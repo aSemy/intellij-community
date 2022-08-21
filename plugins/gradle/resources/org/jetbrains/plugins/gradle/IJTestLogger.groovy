@@ -11,10 +11,10 @@ class IJTestEventLogger {
   static def logger = Logging.getLogger("IJTestEventLogger")
 
   static def configureTestEventLogging(Task task) {
-    File testReportDir = task.temporaryDir.toPath().resolve("ijTestEvents/").toFile()
+    File testReportDir = task.temporaryDir.toPath().resolve("ijTestEventsOriginal/").toFile()
 
     task.outputs.dir(testReportDir)
-      .withPropertyName("ijTestEvents")
+      .withPropertyName("ijTestEventsOriginal")
       .optional(true)
 
     task.doFirst {
@@ -134,8 +134,8 @@ class IJTestEventLogger {
     String filename = System.currentTimeSeconds().toString().dropRight(2)
 
     File testXmlFile = testReportDir.toPath().resolve("${filename}.ij.log").toFile()
-    if (!testXmlFile.isFile()) testXmlFile.createNewFile()
 
+    if (!testXmlFile.isFile()) testXmlFile.createNewFile()
     testXmlFile.withWriterAppend {
       it.writeLine(msg)
     }
@@ -147,7 +147,8 @@ class IJTestEventLogger {
 
   static def wrap(String s) {
     if (!s) return s;
-    s.replaceAll("\r\n|\n\r|\n|\r", "<ijLogEol/>")
+    //s.replaceAll("\r\n|\n\r|\n|\r", "<ijLogEol/>")
+    s.replaceAll("\r\n|\n\r|\n|\r", "")
   }
 
   static String writeLog(s) {
