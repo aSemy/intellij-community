@@ -136,7 +136,6 @@ class IJTestEventLogger {
     File testXmlFile = testReportDir.toPath().resolve("${filename}.ij.log").toFile()
 
     if (!testXmlFile.isFile()) testXmlFile.createNewFile()
-
     testXmlFile.withWriterAppend {
       it.writeLine(msg)
     }
